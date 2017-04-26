@@ -123,7 +123,7 @@ public class CustomerService {
 					"Oleg manager", "Alexandr cleaner", "Vasilisa cleaner", "Yurii traider", "Oleg traider",
 					"Vadim traider", "Rimma dantist", "Vlad dantist", "Slivka slivka", "Jenny painter",
 					"Walter chemist", "Pinkman chemist"};
-		
+
 			for (String name : names) {
 				String[] split = name.split(" ");
 				Customer c = new Customer();

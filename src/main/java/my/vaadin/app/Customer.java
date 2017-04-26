@@ -8,9 +8,9 @@ import java.util.Date;
 public class Customer implements Serializable, Cloneable {
 
 	private Long id;
-	
+
 	private String customerId = "";
-	
+
 	public String getCustomerId() {
 		return id + "";
 	}
@@ -25,7 +25,7 @@ public class Customer implements Serializable, Cloneable {
 	private String position = "";
 
 
-	
+
 
 	private String email = "";
 

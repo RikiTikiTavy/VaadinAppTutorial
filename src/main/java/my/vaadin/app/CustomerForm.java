@@ -4,22 +4,19 @@ import com.vaadin.data.Binder;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
+
 public class CustomerForm extends FormLayout {
-	
+
 	private TextField firstName = new TextField("First name");
 	private TextField position = new TextField("Position");
 	private TextField email = new TextField("Email");
 	private Button save = new Button("Save");
 	private Button delete = new Button(VaadinIcons.MINUS);
-
-
 	private CustomerService service = CustomerService.getInstance();
 	private Customer customer;
 	private MyUI myUI;
@@ -28,7 +25,7 @@ public class CustomerForm extends FormLayout {
 	public CustomerForm(MyUI myUI) {
 		this.myUI = myUI;
 		setSizeUndefined();
-		HorizontalLayout buttons = new HorizontalLayout(save);
+		HorizontalLayout buttons = new HorizontalLayout(save, delete);
 		addComponents(firstName, position, email, buttons);
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		save.setClickShortcut(KeyCode.ENTER);
@@ -36,7 +33,7 @@ public class CustomerForm extends FormLayout {
 		save.addClickListener(e -> this.save());
 		delete.addClickListener(e -> this.delete());
 	}
-	
+
 	public Button getDelete() {
 		return delete;
 	}
@@ -44,15 +41,16 @@ public class CustomerForm extends FormLayout {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 		binder.setBean(customer);
-		setVisible(true);
-		firstName.selectAll();
+		//setVisible(true);
+		//firstName.selectAll();
 	}
-	
+
 
 	private void delete() {
 		service.delete(customer);
 		myUI.updateList();
 		setVisible(false);
+
 	}
 
 	private void save() {
