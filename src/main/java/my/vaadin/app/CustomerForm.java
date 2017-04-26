@@ -15,8 +15,8 @@ public class CustomerForm extends FormLayout {
 	private TextField firstName = new TextField("First name");
 	private TextField position = new TextField("Position");
 	private TextField email = new TextField("Email");
-	private Button save = new Button("Save");
-	private Button delete = new Button(VaadinIcons.MINUS);
+	private Button save = new Button("Сохранить");
+	private Button delete = new Button("Удалить");
 	private CustomerService service = CustomerService.getInstance();
 	private Customer customer;
 	private MyUI myUI;
@@ -25,7 +25,7 @@ public class CustomerForm extends FormLayout {
 	public CustomerForm(MyUI myUI) {
 		this.myUI = myUI;
 		setSizeUndefined();
-		HorizontalLayout buttons = new HorizontalLayout(save, delete);
+		HorizontalLayout buttons = new HorizontalLayout(save);
 		addComponents(firstName, position, email, buttons);
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		save.setClickShortcut(KeyCode.ENTER);
@@ -41,8 +41,6 @@ public class CustomerForm extends FormLayout {
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 		binder.setBean(customer);
-		//setVisible(true);
-		//firstName.selectAll();
 	}
 
 
@@ -50,7 +48,6 @@ public class CustomerForm extends FormLayout {
 		service.delete(customer);
 		myUI.updateList();
 		setVisible(false);
-
 	}
 
 	private void save() {

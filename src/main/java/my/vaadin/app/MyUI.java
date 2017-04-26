@@ -8,6 +8,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -31,7 +32,7 @@ public class MyUI extends UI {
 	protected void init(VaadinRequest vaadinRequest) {
 		final VerticalLayout layout = new VerticalLayout();
 
-		filterText.setPlaceholder("search");
+		filterText.setPlaceholder("Search");
 		filterText.addValueChangeListener(e -> updateList());
 		filterText.setValueChangeMode(ValueChangeMode.LAZY);
 
@@ -43,7 +44,7 @@ public class MyUI extends UI {
 		search.addComponents(filterText, clearFilterTextBtn);
 		search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
-		editCustomer = new Button(VaadinIcons.ITALIC);
+		editCustomer = new Button("Редактировать");
 		editCustomer.setDescription("edit customer");
 
 
@@ -57,29 +58,40 @@ public class MyUI extends UI {
 		});
 
 
+		//Button deleteCustomer = new Button("Удал");
+		
 
-
-		Button addCustomerBtn = new Button(VaadinIcons.PLUS);
+		Button addCustomerBtn = new Button("Добавить пользователя");
+	
 		addCustomerBtn.setDescription("Add a new customer");
 		addCustomerBtn.addClickListener(e -> {
+			
 			grid.asSingleSelect().clear();
-
 			form.getDelete().setEnabled(false);
 			editCustomer.setEnabled(false);
 
 			form.setCustomer(new Customer());
 			form.setVisible(true);
-		});
-
-
-		HorizontalLayout toolbar = new HorizontalLayout(addCustomerBtn, editCustomer, form.getDelete(), search);
+		});	
+	
+		
+	
+		
+		HorizontalLayout toolbar = new HorizontalLayout();
+		
+		toolbar.addComponents(addCustomerBtn,  editCustomer, form.getDelete(), search);
 		toolbar.setSizeFull();
-		toolbar.setComponentAlignment(search, Alignment.BOTTOM_CENTER);
+		
+		toolbar.setExpandRatio(form.getDelete(), 1.0f);
+		
 		grid.setColumns("customerId", "firstName", "position", "email");
 		HorizontalLayout main = new HorizontalLayout(grid, form);
+		
 		main.setSizeFull();
 		grid.setSizeFull();
-		main.setExpandRatio(grid, 1);
+		main.setExpandRatio(grid, 1f);
+		
+			
 		layout.addComponents(toolbar, main);
 
 		updateList();
@@ -91,12 +103,11 @@ public class MyUI extends UI {
 		grid.asSingleSelect().addValueChangeListener(event -> {
 			editCustomer.setEnabled(true);
 			form.getDelete().setEnabled(true);
-			if (event.getValue() == null) {
-				//form.setVisible(false);
-
-			} else {
+			
+			if (event.getValue() != null) {
 				form.setCustomer(event.getValue());
 			}
+			
 		});
 	}
 
