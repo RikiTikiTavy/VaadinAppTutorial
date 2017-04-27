@@ -1,5 +1,8 @@
 package my.vaadin.app;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
@@ -17,10 +20,10 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("mytheme")
 public class MyUI extends UI {
-	private CustomerService service = CustomerService.getInstance();
 	private Grid<Customer> grid = new Grid<>(Customer.class);
 	private TextField filterText = new TextField();
 	private Button editCustomer;
+	private DatabaseConnectuion databaseInstance = DatabaseConnectuion.getInstance();
 	private Window subWindow = new Window("Добавление пользователя");
 	private CustomerForm form = new CustomerForm(this);
 
@@ -77,7 +80,6 @@ public class MyUI extends UI {
 			
 		
 			editCustomer.addClickListener(e -> {
-				
 				grid.asSingleSelect().clear();
 				form.setCustomer(new Customer());
 				//form.setVisible(true);
@@ -104,8 +106,25 @@ public class MyUI extends UI {
 	}
 
 	public void updateList() {
-		List<Customer> customers = service.findAll(filterText.getValue());
-		grid.setItems(customers);
+		 List<Customer> customers = new ArrayList();
+		 
+		 ResultSet rs = databaseInstance.getResultSet();
+		 try{
+			 while(rs.next()){
+				 Customer customer = new Customer();
+				 customer.setFirstName(rs.getString("First_Name"));
+				 customer.setPosition(rs.getString("Position"));
+				 customer.setEmail(rs.getString("Email"));
+				 customer.setId(rs.getLong("id"));
+				 customers.add(customer);		
+	      }
+		 } catch (SQLException e){
+			 e.printStackTrace();
+		 }
+		 
+		 
+		 //customers.forEach(action->System.out.println(action.getEmail()));
+			grid.setItems(customers);
 	}
 
 

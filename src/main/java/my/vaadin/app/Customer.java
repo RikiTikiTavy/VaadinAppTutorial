@@ -24,9 +24,6 @@ public class Customer implements Serializable, Cloneable {
 
 	private String position = "";
 
-
-
-
 	private String email = "";
 
 	public Long getId() {
@@ -44,8 +41,6 @@ public class Customer implements Serializable, Cloneable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
 
 
 	public String getPosition() {

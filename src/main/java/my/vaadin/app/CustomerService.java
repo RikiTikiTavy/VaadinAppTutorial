@@ -13,7 +13,7 @@ public class CustomerService {
 
 	private static CustomerService instance;
 	private static final Logger LOGGER = Logger.getLogger(CustomerService.class.getName());
-
+	private DatabaseConnectuion databaseInstance = DatabaseConnectuion.getInstance();
 	private final HashMap<Long, Customer> contacts = new HashMap<>();
 	private long nextId = 0;
 
@@ -23,7 +23,6 @@ public class CustomerService {
 	public static CustomerService getInstance() {
 		if (instance == null) {
 			instance = new CustomerService();
-			instance.ensureTestData();
 		}
 		return instance;
 	}
@@ -44,7 +43,7 @@ public class CustomerService {
 					arrayList.add(contact.clone());
 				}
 			} catch (CloneNotSupportedException ex) {
-				Logger.getLogger(CustomerService.class.getName()).log(Level.SEVERE, null, ex);
+				ex.printStackTrace();
 			}
 		}
 		Collections.sort(arrayList, new Comparator<Customer>() {
@@ -109,24 +108,6 @@ public class CustomerService {
 			throw new RuntimeException(ex);
 		}
 		contacts.put(entry.getId(), entry);
-	}
-
-	public void ensureTestData() {
-		if (findAll().isEmpty()) {
-			final String[] names = new String[] { "Pavel manager", "Vadim Programmer", "Indus programmer",
-					"Oleg manager", "Alexandr cleaner", "Vasilisa cleaner", "Yurii traider", "Oleg traider",
-					"Vadim traider", "Rimma dantist", "Vlad dantist", "Slivka slivka", "Jenny painter",
-					"Walter chemist", "Pinkman chemist"};
-
-			for (String name : names) {
-				String[] split = name.split(" ");
-				Customer c = new Customer();
-				c.setFirstName(split[0]);
-				c.setPosition(split[1]);
-				c.setEmail(split[0].toLowerCase() + "@gmail.com");
-				save(c);
-			}
-		}
 	}
 
 }
