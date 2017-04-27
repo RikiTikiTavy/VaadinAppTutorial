@@ -21,13 +21,14 @@ public class MyUI extends UI {
 	private Grid<Customer> grid = new Grid<>(Customer.class);
 	private TextField filterText = new TextField();
 	private Button editCustomer;
-
+	private Window subWindow = new Window("Добавление пользователя");
 	private CustomerForm form = new CustomerForm(this);
 
-	public Button getEditCustomer() {
-		return editCustomer;
+	
+	public Window getSubWindow() {
+		return subWindow;
 	}
-
+	
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
 		final VerticalLayout layout = new VerticalLayout();
@@ -46,37 +47,10 @@ public class MyUI extends UI {
 
 		editCustomer = new Button("Редактировать");
 		editCustomer.setDescription("edit customer");
-
-
-		editCustomer.addClickListener(e -> {
-
-			grid.asSingleSelect().clear();
-
-			form.setCustomer(new Customer());
-			form.setVisible(true);
-			editCustomer.setEnabled(false);
-		});
-
-
-		//Button deleteCustomer = new Button("Удал");
-		
-
+			   
 		Button addCustomerBtn = new Button("Добавить пользователя");
-	
 		addCustomerBtn.setDescription("Add a new customer");
-		addCustomerBtn.addClickListener(e -> {
-			
-			grid.asSingleSelect().clear();
-			form.getDelete().setEnabled(false);
-			editCustomer.setEnabled(false);
 
-			form.setCustomer(new Customer());
-			form.setVisible(true);
-		});	
-	
-		
-	
-		
 		HorizontalLayout toolbar = new HorizontalLayout();
 		
 		toolbar.addComponents(addCustomerBtn,  editCustomer, form.getDelete(), search);
@@ -91,7 +65,27 @@ public class MyUI extends UI {
 		grid.setSizeFull();
 		main.setExpandRatio(grid, 1f);
 		
+	    subWindow.setContent(form);
+	    
+			addCustomerBtn.addClickListener(e -> {
+			grid.asSingleSelect().clear();
+			form.setCustomer(new Customer());
+			form.setVisible(true);
+			addWindow(subWindow);
+			subWindow.setModal(true);
+		});	
 			
+		
+			editCustomer.addClickListener(e -> {
+				
+				grid.asSingleSelect().clear();
+				form.setCustomer(new Customer());
+				//form.setVisible(true);
+				addWindow(subWindow);
+				subWindow.setModal(true);
+			});	
+			
+				
 		layout.addComponents(toolbar, main);
 
 		updateList();
@@ -103,11 +97,9 @@ public class MyUI extends UI {
 		grid.asSingleSelect().addValueChangeListener(event -> {
 			editCustomer.setEnabled(true);
 			form.getDelete().setEnabled(true);
-			
 			if (event.getValue() != null) {
 				form.setCustomer(event.getValue());
 			}
-			
 		});
 	}
 
