@@ -4,34 +4,54 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.icons.VaadinIcons;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.ValueChangeMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("mytheme")
 public class MyUI extends UI {
+
 	private Grid<Customer> grid = new Grid<>(Customer.class);
 	private TextField filterText = new TextField();
-	private Button editCustomer;
+	private Button editCustomer = new Button("Редактировать");
 	private DatabaseConnectuion databaseInstance = DatabaseConnectuion.getInstance();
-	private Window subWindow = new Window("Добавление пользователя");
+	private Window addWindow = new Window("Добавление пользователя");
 	private CustomerForm form = new CustomerForm(this);
-
+	private Button addCustomerBtn = new Button("Добавить пользователя");
+	private Button save = new Button("Сохранить");
+	private Button cancel = new Button("Отменить");
+	private TextField firstNameField = new TextField("Name");
+	private TextField positionField = new TextField("Position");
+	private TextField emailField = new TextField("Email");
+	private Button delete = new Button("Удалить");
 	
-	public Window getSubWindow() {
-		return subWindow;
+	public MyUI() {
+		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		save.setClickShortcut(KeyCode.ENTER);
+		cancel.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		cancel.setClickShortcut(KeyCode.ENTER);
+		cancel.addClickListener(e -> this.cancel());
+		delete.addClickListener(e -> this.delete());
+		save.addClickListener(e -> this.save());	
 	}
-	
+
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
 		final VerticalLayout layout = new VerticalLayout();
@@ -48,44 +68,37 @@ public class MyUI extends UI {
 		search.addComponents(filterText, clearFilterTextBtn);
 		search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
-		editCustomer = new Button("Редактировать");
 		editCustomer.setDescription("edit customer");
-			   
-		Button addCustomerBtn = new Button("Добавить пользователя");
+			
 		addCustomerBtn.setDescription("Add a new customer");
-
+			
 		HorizontalLayout toolbar = new HorizontalLayout();
 		
-		toolbar.addComponents(addCustomerBtn,  editCustomer, form.getDelete(), search);
+		toolbar.addComponents(addCustomerBtn, editCustomer, delete, search);
 		toolbar.setSizeFull();
+		toolbar.setExpandRatio(delete, 1.0f);
 		
-		toolbar.setExpandRatio(form.getDelete(), 1.0f);
+		VerticalLayout addLayout = new VerticalLayout();
+		HorizontalLayout saveCancel = new HorizontalLayout();
+		saveCancel.addComponents(save, cancel);
+		addLayout.addComponents(firstNameField, positionField, emailField, saveCancel);
 		
 		grid.setColumns("customerId", "firstName", "position", "email");
-		HorizontalLayout main = new HorizontalLayout(grid, form);
+		
+		HorizontalLayout main = new HorizontalLayout(grid);
 		
 		main.setSizeFull();
 		grid.setSizeFull();
-		main.setExpandRatio(grid, 1f);
 		
-	    subWindow.setContent(form);
-	    
+		addWindow.setContent(addLayout);
 			addCustomerBtn.addClickListener(e -> {
 			grid.asSingleSelect().clear();
-			form.setCustomer(new Customer());
-			form.setVisible(true);
-			addWindow(subWindow);
-			subWindow.setModal(true);
+			updateList();
+			addWindow(addWindow);
+			addWindow.setModal(true);
 		});	
 			
-		
-			editCustomer.addClickListener(e -> {
-				grid.asSingleSelect().clear();
-				form.setCustomer(new Customer());
-				//form.setVisible(true);
-				addWindow(subWindow);
-				subWindow.setModal(true);
-			});	
+	
 			
 				
 		layout.addComponents(toolbar, main);
@@ -94,20 +107,27 @@ public class MyUI extends UI {
 		setContent(layout);
 		form.setVisible(false);
 		editCustomer.setEnabled(false);
-		form.getDelete().setEnabled(false);
+		delete.setEnabled(false);
 
 		grid.asSingleSelect().addValueChangeListener(event -> {
 			editCustomer.setEnabled(true);
-			form.getDelete().setEnabled(true);
+			delete.setEnabled(true);
 			if (event.getValue() != null) {
 				form.setCustomer(event.getValue());
 			}
 		});
 	}
 
+
+	private void save() {
+		databaseInstance.addToDatabase(firstNameField.getValue(), positionField.getValue(), emailField.getValue());
+		updateList();
+		addWindow.close();
+	}
+	
+	
 	public void updateList() {
 		 List<Customer> customers = new ArrayList();
-		 
 		 ResultSet rs = databaseInstance.getResultSet();
 		 try{
 			 while(rs.next()){
@@ -120,13 +140,22 @@ public class MyUI extends UI {
 	      }
 		 } catch (SQLException e){
 			 e.printStackTrace();
-		 }
-		 
-		 
-		 //customers.forEach(action->System.out.println(action.getEmail()));
+		 }	 
 			grid.setItems(customers);
 	}
-
+	
+	private void cancel() {
+		addWindow.close();
+	}
+	
+	private void delete() {
+		Set<Customer> set = grid.getSelectedItems();
+		for (Customer c : set){
+			databaseInstance.removeFromDatabase(c.getId());
+		}
+		updateList();
+	}
+	
 
 	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
 	@VaadinServletConfiguration(ui = MyUI.class, productionMode = false)

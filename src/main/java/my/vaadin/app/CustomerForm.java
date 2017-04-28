@@ -15,54 +15,33 @@ public class CustomerForm extends FormLayout {
 	private TextField firstName = new TextField("First name");
 	private TextField position = new TextField("Position");
 	private TextField email = new TextField("Email");
-	private Button save = new Button("Сохранить");
-	private Button delete = new Button("Удалить");
+
 	private Button cancel = new Button("Отменить");
-	private CustomerService service = CustomerService.getInstance();
+
 	private Customer customer;
 	private MyUI myUI;
 	private Binder<Customer> binder = new Binder<>(Customer.class);
 
+
 	public CustomerForm(MyUI myUI) {
 		this.myUI = myUI;
 		setSizeUndefined();
-		HorizontalLayout buttons = new HorizontalLayout(save, cancel);
+		HorizontalLayout buttons = new HorizontalLayout( cancel);
 		addComponents(firstName, position, email, buttons);
-		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		save.setClickShortcut(KeyCode.ENTER);
+	
 		cancel.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		cancel.setClickShortcut(KeyCode.ENTER);
 		binder.bindInstanceFields(this);
-		cancel.addClickListener(e -> this.cancel());
-		save.addClickListener(e -> this.save());
-		delete.addClickListener(e -> this.delete());
+
 	}
 
-	public Button getDelete() {
-		return delete;
-	}
+
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
-		binder.setBean(customer);
+		binder.setBean(customer);	
 	}
 
-
-	private void delete() {
-		service.delete(customer);
-		myUI.updateList();
-	    setVisible(false);
-	}
-
-	private void save() {
-		service.save(customer);
-		myUI.updateList();
-		myUI.getSubWindow().close();
-		//setVisible(false);
-	}
 	
-	private void cancel() {
-		myUI.getSubWindow().close();
-		//setVisible(false);
-	}
+
 }

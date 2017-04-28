@@ -10,7 +10,7 @@ public class DatabaseConnectuion {
 
 	   static final String DB_URL = "jdbc:mysql://localhost/VaadinDB";
 	   static final String USER = "root";
-	   static final String PASS = "root";
+	   static final String PASS = "";
 	   private Connection conn = null;
 	   private Statement stmt = null;
 	   ResultSet resultSet = null;
@@ -24,7 +24,6 @@ public class DatabaseConnectuion {
 		    stmt = conn.createStatement();
 		    resultSet = stmt.executeQuery("SELECT * FROM Customers");
 		
-		   
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -35,7 +34,6 @@ public class DatabaseConnectuion {
 		try {
 			resultSet = stmt.executeQuery("SELECT * FROM Customers");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return resultSet;
@@ -47,6 +45,36 @@ public class DatabaseConnectuion {
 		}
 		return databaseInstance;
 	}
+	
+	
+	public void addToDatabase(String firstName, String position, String email){
+	    try {
+	    	   	String query ="INSERT INTO Customers "
+						+ "(First_Name, Position, Email) " 
+					    +	"VALUES " 
+					    	+ "('" + firstName + "', '" + position + "' , '" + email + "' );" ;
+	    	
+			stmt.executeUpdate(query);
+	    		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void removeFromDatabase(Long id){
+	    try {
+ 
+	    	   	String query = "DELETE FROM Customers "
+	    	   			+ " WHERE "
+	    	   			+ "id = " + id;
+	    	   	System.out.println(query);
+			stmt.executeUpdate(query);
+	    		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public ResultSet delete(){
 	    try {
