@@ -18,7 +18,7 @@ VALUES
 ("Vlad", "dantist", "gfre@gmail.com");
 
 	
-CREATE TABLE Companies (ComanyId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, CompanyName VARCHAR(50), CustomerId INT);
+CREATE TABLE Companies (CompanyId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, CompanyName VARCHAR(50), CustomerId INT);
 
 
 INSERT INTO Companies (CompanyName, CustomerId) 

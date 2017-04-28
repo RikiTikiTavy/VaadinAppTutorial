@@ -30,17 +30,23 @@ public class MyUI extends UI {
 
 	private Grid<Customer> grid = new Grid<>(Customer.class);
 	private TextField filterText = new TextField();
-	private Button editCustomer = new Button("Редактировать");
+	private Button updateCustomerBtn = new Button("Редактировать");
 	private DatabaseConnectuion databaseInstance = DatabaseConnectuion.getInstance();
 	private Window addWindow = new Window("Добавление пользователя");
-	private CustomerForm form = new CustomerForm(this);
+	private Window updateWindow = new Window("Редактирование пользователя");
 	private Button addCustomerBtn = new Button("Добавить пользователя");
 	private Button save = new Button("Сохранить");
 	private Button cancel = new Button("Отменить");
+	private Button update = new Button("Редактировать");
 	private TextField firstNameField = new TextField("Name");
 	private TextField positionField = new TextField("Position");
 	private TextField emailField = new TextField("Email");
+	
+	private TextField firstNameField2 = new TextField("Name");
+	private TextField positionField2 = new TextField("Position");
+	private TextField emailField2 = new TextField("Email");
 	private Button delete = new Button("Удалить");
+	//private CompanyGrid companyGrid = new CompanyGrid();
 	
 	public MyUI() {
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -49,7 +55,8 @@ public class MyUI extends UI {
 		cancel.setClickShortcut(KeyCode.ENTER);
 		cancel.addClickListener(e -> this.cancel());
 		delete.addClickListener(e -> this.delete());
-		save.addClickListener(e -> this.save());	
+		save.addClickListener(e -> this.save());
+		update.addClickListener(e -> this.update());
 	}
 
 	@Override
@@ -67,14 +74,10 @@ public class MyUI extends UI {
 		CssLayout search = new CssLayout();
 		search.addComponents(filterText, clearFilterTextBtn);
 		search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-
-		editCustomer.setDescription("edit customer");
-			
-		addCustomerBtn.setDescription("Add a new customer");
 			
 		HorizontalLayout toolbar = new HorizontalLayout();
 		
-		toolbar.addComponents(addCustomerBtn, editCustomer, delete, search);
+		toolbar.addComponents(addCustomerBtn, updateCustomerBtn, delete, search);
 		toolbar.setSizeFull();
 		toolbar.setExpandRatio(delete, 1.0f);
 		
@@ -83,38 +86,46 @@ public class MyUI extends UI {
 		saveCancel.addComponents(save, cancel);
 		addLayout.addComponents(firstNameField, positionField, emailField, saveCancel);
 		
+		VerticalLayout updateLayout = new VerticalLayout();
+		updateLayout.addComponents(firstNameField2, positionField2, emailField2);
+		
 		grid.setColumns("customerId", "firstName", "position", "email");
 		
+
 		HorizontalLayout main = new HorizontalLayout(grid);
 		
 		main.setSizeFull();
 		grid.setSizeFull();
 		
+		updateWindow.setContent(updateLayout);
 		addWindow.setContent(addLayout);
-			addCustomerBtn.addClickListener(e -> {
+		
+		addCustomerBtn.addClickListener(e -> {
+		grid.asSingleSelect().clear();
+		updateList();
+		addWindow(addWindow);
+		addWindow.setModal(true);
+		});	
+		
+		updateCustomerBtn.addClickListener(e -> {
 			grid.asSingleSelect().clear();
 			updateList();
-			addWindow(addWindow);
-			addWindow.setModal(true);
-		});	
-			
-	
-			
-				
+			addWindow(updateWindow);
+			updateWindow.setModal(true);
+			});	
+		
+		
+		
 		layout.addComponents(toolbar, main);
 
 		updateList();
 		setContent(layout);
-		form.setVisible(false);
-		editCustomer.setEnabled(false);
+		updateCustomerBtn.setEnabled(false);
 		delete.setEnabled(false);
 
 		grid.asSingleSelect().addValueChangeListener(event -> {
-			editCustomer.setEnabled(true);
-			delete.setEnabled(true);
-			if (event.getValue() != null) {
-				form.setCustomer(event.getValue());
-			}
+			updateCustomerBtn.setEnabled(true);
+			delete.setEnabled(true);	
 		});
 	}
 
@@ -125,10 +136,17 @@ public class MyUI extends UI {
 		addWindow.close();
 	}
 	
+	private void update() {
+		Set<Customer> set = grid.getSelectedItems();
+		for (Customer c : set){
+			databaseInstance.updateDatabase(c.getId(), c.getFirstName(), c.getPosition(), c.getEmail());
+		}
+	}
+	
 	
 	public void updateList() {
 		 List<Customer> customers = new ArrayList();
-		 ResultSet rs = databaseInstance.getResultSet();
+		 ResultSet rs = databaseInstance.getResultSetCustomers();
 		 try{
 			 while(rs.next()){
 				 Customer customer = new Customer();

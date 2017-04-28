@@ -29,10 +29,21 @@ public class DatabaseConnectuion {
 		} 
 	   }
 	   
-	   public ResultSet getResultSet() {
+	   public ResultSet getResultSetCustomers() {
 		   ResultSet resultSet = null;
 		try {
 			resultSet = stmt.executeQuery("SELECT * FROM Customers");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return resultSet;
+	   } 
+	   
+	   
+	   public ResultSet getResultSetCompanies() {
+		   ResultSet resultSet = null;
+		try {
+			resultSet = stmt.executeQuery("SELECT * FROM Companies");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -61,13 +72,24 @@ public class DatabaseConnectuion {
 		}
 	}
 	
+
 	public void removeFromDatabase(Long id){
 	    try {
+	
+	    	   	String query = "DELETE FROM Customers WHERE id = " + id;
+			stmt.executeUpdate(query);
+	    		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateDatabase(Long id, String name, String position, String email){
+	    try {
  
-	    	   	String query = "DELETE FROM Customers "
-	    	   			+ " WHERE "
-	    	   			+ "id = " + id;
-	    	   	System.out.println(query);
+	    	   	String query = "UPDATE Customers SET First_Name = '"+ name +  "', Position = '" 
+	    	   	+ position + "' + Email = '" + email + "' WHERE id = " + id;
+	    	   	//UPDATE Customers SET First_Name = 'Myrzik', Position = 'Pivovar', Email = '@@@@@'  WHERE id = 38;
 			stmt.executeUpdate(query);
 	    		
 		} catch (SQLException e) {
@@ -76,13 +98,7 @@ public class DatabaseConnectuion {
 	}
 	
 	
-	public ResultSet delete(){
-	    try {
-			resultSet = stmt.executeQuery("SELECT * FROM Customers");
-		} catch (SQLException e) {
+
 	
-			e.printStackTrace();
-		}
-	    return resultSet;
-	}
+	
 }

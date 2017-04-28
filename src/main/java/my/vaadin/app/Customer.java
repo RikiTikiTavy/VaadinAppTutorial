@@ -9,16 +9,9 @@ public class Customer implements Serializable, Cloneable {
 
 	private Long id;
 
-	private String customerId = "";
-
 	public String getCustomerId() {
 		return id + "";
 	}
-
-	public void setCustomerId(String customerId) {
-		this.customerId = customerId;
-	}
-
 
 	private String firstName = "";
 
