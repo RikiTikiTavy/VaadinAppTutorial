@@ -1,17 +1,17 @@
 package my.vaadin.dao.objects;
 
 public class Company {
-	
-private Long comanyId;
-	
+
+	private Long companyId;
+
 	private String companyName;
 
-	public Long getComanyId() {
-		return comanyId;
+	public Long getCompanyId() {
+		return companyId;
 	}
 
-	public void setComanyId(Long comanyId) {
-		this.comanyId = comanyId;
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
 	}
 
 	public String getCompanyName() {

@@ -18,20 +18,20 @@ VALUES
 ("Vlad", "dantist", "gfre@gmail.com");
 
 	
-CREATE TABLE Companies (CompanyId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, CompanyName VARCHAR(50), CustomerId INT);
+CREATE TABLE Companies (companyId INT NOT NULL PRIMARY KEY AUTO_INCREMENT, companyName VARCHAR(50));
 
 
-INSERT INTO Companies (CompanyName, CustomerId) 
+INSERT INTO Companies (companyName) 
 VALUES 
-("Sibur", 1),
-("Yamaha", 3),
-("Yamaha", 4),
-("Sibur", 3),
-("Tenkoff", 2),
-("Tenkoff", 1),
-("Sibur", 3),
-("Yamaha", 2),
-("Yamaha", 4),
-("Tenkoff", 1),
-("Tenkoff", 4);
+("Sibur"),
+("Yamaha"),
+("Yamaha"),
+("Sibur"),
+("Tenkoff"),
+("Tenkoff"),
+("Sibur"),
+("Yamaha"),
+("Yamaha"),
+("Tenkoff"),
+("Tenkoff");
 			

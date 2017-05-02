@@ -6,9 +6,10 @@ import java.util.Date;
 
 @SuppressWarnings("serial")
 public class Customer implements Serializable, Cloneable {
-	
-	
-	
+	private Long id;
+	private String firstName = "";
+	private String position = "";
+	private String email = "";
 
 	public Customer() {
 		
@@ -20,17 +21,12 @@ public class Customer implements Serializable, Cloneable {
 		this.email = email;
 	}
 
-	private Long id;
-
+	
 	public String getCustomerId() {
 		return id + "";
 	}
 
-	private String firstName = "";
 
-	private String position = "";
-
-	private String email = "";
 
 	public Long getId() {
 		return id;

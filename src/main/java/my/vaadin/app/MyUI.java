@@ -26,7 +26,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import my.vaadin.dao.impls.CompanyDAOImpl;
 import my.vaadin.dao.impls.CustomerDAOImpl;
 import my.vaadin.dao.objects.Customer;
 
@@ -46,36 +45,28 @@ public class MyUI extends UI {
 	private TextField firstNameField = new TextField("Name");
 	private TextField positionField = new TextField("Position");
 	private TextField emailField = new TextField("Email");
-	
+
 	private TextField firstNameField2 = new TextField("Name");
 	private TextField positionField2 = new TextField("Position");
 	private TextField emailField2 = new TextField("Email");
 	private Button delete = new Button("Удалить");
 	private CustomerDAOImpl customerDAOImpl;
-	private CompanyDAOImpl companyDAOImpl;
 	private TabSheet tabsheet = new TabSheet();
+
+	private SingleConnectionDataSource customerConnection = new SingleConnectionDataSource();
+	private final VerticalLayout customerLayout = new VerticalLayout();
+	private final VerticalLayout companyLayout = new CompanyLayout();
 	
-	SingleConnectionDataSource customerConnection = new SingleConnectionDataSource();
-	
-	SingleConnectionDataSource companyConnection = new SingleConnectionDataSource();
-    
 
 	public MyUI() {
 		customerConnection.setDriverClassName("com.mysql.jdbc.Driver");
 		customerConnection.setUrl("jdbc:mysql://localhost/VaadinDB");
 		customerConnection.setUsername("root");
 		customerConnection.setPassword("");
-	    JdbcTemplate CustomerNpjt = new JdbcTemplate(customerConnection);
-	    customerDAOImpl = new CustomerDAOImpl(CustomerNpjt);
-	    
-	    companyConnection.setDriverClassName("com.mysql.jdbc.Driver");
-	    companyConnection.setUrl("jdbc:mysql://localhost/VaadinDB");
-	    companyConnection.setUsername("root");
-	    companyConnection.setPassword("");
-	    JdbcTemplate companyNpjt = new JdbcTemplate(customerConnection);
-	    companyDAOImpl = new CompanyDAOImpl(companyNpjt);
-	    
-		
+		JdbcTemplate customerNpjt = new JdbcTemplate(customerConnection);
+		customerDAOImpl = new CustomerDAOImpl(customerNpjt);
+
+
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		save.setClickShortcut(KeyCode.ENTER);
 		cancel.setStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -88,7 +79,7 @@ public class MyUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
-		final VerticalLayout layout = new VerticalLayout();
+		
 
 		filterText.setPlaceholder("Search");
 		filterText.addValueChangeListener(e -> updateList());
@@ -100,103 +91,97 @@ public class MyUI extends UI {
 		CssLayout search = new CssLayout();
 		search.addComponents(filterText, clearFilterTextBtn);
 		search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-			
+
 		HorizontalLayout toolbar = new HorizontalLayout();
-		
+
 		toolbar.addComponents(addCustomerBtn, updateCustomerBtn, delete, search);
 		toolbar.setSizeFull();
 		toolbar.setExpandRatio(delete, 1.0f);
-		
+
 		VerticalLayout addLayout = new VerticalLayout();
 		HorizontalLayout saveCancel = new HorizontalLayout();
 		saveCancel.addComponents(save, cancel);
 		addLayout.addComponents(firstNameField, positionField, emailField, saveCancel);
-		
+
 		VerticalLayout updateLayout = new VerticalLayout();
 		updateLayout.addComponents(firstNameField2, positionField2, emailField2);
-		
+
 		grid.setColumns("customerId", "firstName", "position", "email");
 
-
 		HorizontalLayout main = new HorizontalLayout(grid);
-		
+
 		main.setSizeFull();
 		grid.setSizeFull();
-		
+
 		updateWindow.setContent(updateLayout);
 		addWindow.setContent(addLayout);
-		
+
 		addCustomerBtn.addClickListener(e -> {
-		grid.asSingleSelect().clear();
-		updateList();
-	
-		addWindow(addWindow);
-		addWindow.setModal(true);
-		});	
-		
+			grid.asSingleSelect().clear();
+			updateList();
+
+			addWindow(addWindow);
+			addWindow.setModal(true);
+		});
+
 		updateCustomerBtn.addClickListener(e -> {
 			grid.asSingleSelect().clear();
 			updateList();
-	
+
 			addWindow(updateWindow);
 			updateWindow.setModal(true);
-			});	
-		
-		
-		
-		layout.addComponent(tabsheet);
-		
-		layout.addComponents(toolbar, main);
-		updateList();
-	
-		setContent(layout);
+		});
 
-	
+		
+		
+		customerLayout.addComponents(toolbar, main);
+		updateList();
+		tabsheet.addTab(customerLayout).setCaption("Customers");
+		tabsheet.addTab(companyLayout).setCaption("Companies");
+		
+		setContent(tabsheet);
+
 		updateCustomerBtn.setEnabled(false);
 		delete.setEnabled(false);
 
 		grid.asSingleSelect().addValueChangeListener(event -> {
 			updateCustomerBtn.setEnabled(true);
-			delete.setEnabled(true);	
+			delete.setEnabled(true);
 		});
 	}
 
-
 	private void save() {
-		customerDAOImpl.insert(new Customer(firstNameField.getValue(), positionField.getValue(), emailField.getValue()));
+		customerDAOImpl
+				.insert(new Customer(firstNameField.getValue(), positionField.getValue(), emailField.getValue()));
 		updateList();
-	
+
 		addWindow.close();
 	}
-	
+
 	private void update() {
 		Set<Customer> set = grid.getSelectedItems();
-		
-		for (Customer c : set){
+
+		for (Customer c : set) {
 			customerDAOImpl.changeCustomer(c.getId(), c.getFirstName(), c.getPosition(), c.getEmail());
 		}
-		
-	}
-	
-	
-	public void updateList() {
-		 List<Customer> customers = customerDAOImpl.updateCustomerList();
-			grid.setItems(customers);
-	}
-	
-	
 
-	
+	}
+
+	public void updateList() {
+		List<Customer> customers = customerDAOImpl.updateCustomerList();
+		grid.setItems(customers);
+	}
+
 	private void cancel() {
 		addWindow.close();
 	}
-	
+
 	private void delete() {
 		Set<Customer> set = grid.getSelectedItems();
-		for (Customer c : set){
+		for (Customer c : set) {
 			customerDAOImpl.delete(c.getId());
 		}
-		updateList();	
+		updateList();
 	}
 
 	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)

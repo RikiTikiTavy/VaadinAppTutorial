@@ -20,7 +20,7 @@ public class CompanyDAOImpl implements  CompanyDAO{
 
 	@Override
 	public List<Company> updateCompanyList() {
-		String sql = "SELECT * FROM Customers";
+		String sql = "SELECT * FROM Companies";
 
 		return jdbcTemplate.query(sql, new CompanyRowMapper());
 	}
@@ -31,8 +31,8 @@ public class CompanyDAOImpl implements  CompanyDAO{
 		@Override
 		public Company mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Company company = new Company();
-			company.setCompanyName(rs.getString("CompanyName"));
-			company.setComanyId(rs.getLong("CompanyId"));
+			company.setCompanyName(rs.getString("companyName"));
+			company.setCompanyId(rs.getLong("companyId"));
 			return company;
 		}
 
