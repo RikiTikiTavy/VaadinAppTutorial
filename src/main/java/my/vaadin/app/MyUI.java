@@ -19,11 +19,14 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
+import my.vaadin.dao.objects.Customer;
 
 @Theme("mytheme")
 public class MyUI extends UI {
@@ -117,9 +120,10 @@ public class MyUI extends UI {
 		
 		
 		layout.addComponents(toolbar, main);
-
 		updateList();
 		setContent(layout);
+
+	
 		updateCustomerBtn.setEnabled(false);
 		delete.setEnabled(false);
 

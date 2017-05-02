@@ -1,4 +1,4 @@
-package my.vaadin.app;
+package my.vaadin.dao.objects;
 
 import java.io.Serializable;
 import java.time.LocalDate;
