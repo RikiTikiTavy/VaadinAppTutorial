@@ -1,12 +1,12 @@
 package my.vaadin.app;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.annotation.WebServlet;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -26,6 +26,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import my.vaadin.dao.impls.CompanyDAOImpl;
+import my.vaadin.dao.impls.CustomerDAOImpl;
 import my.vaadin.dao.objects.Customer;
 
 @Theme("mytheme")
@@ -34,7 +36,7 @@ public class MyUI extends UI {
 	private Grid<Customer> grid = new Grid<>(Customer.class);
 	private TextField filterText = new TextField();
 	private Button updateCustomerBtn = new Button("Редактировать");
-	private DatabaseConnectuion databaseInstance = DatabaseConnectuion.getInstance();
+
 	private Window addWindow = new Window("Добавление пользователя");
 	private Window updateWindow = new Window("Редактирование пользователя");
 	private Button addCustomerBtn = new Button("Добавить пользователя");
@@ -49,9 +51,31 @@ public class MyUI extends UI {
 	private TextField positionField2 = new TextField("Position");
 	private TextField emailField2 = new TextField("Email");
 	private Button delete = new Button("Удалить");
-	//private CompanyGrid companyGrid = new CompanyGrid();
+	private CustomerDAOImpl customerDAOImpl;
+	private CompanyDAOImpl companyDAOImpl;
+	private TabSheet tabsheet = new TabSheet();
 	
+	SingleConnectionDataSource customerConnection = new SingleConnectionDataSource();
+	
+	SingleConnectionDataSource companyConnection = new SingleConnectionDataSource();
+    
+
 	public MyUI() {
+		customerConnection.setDriverClassName("com.mysql.jdbc.Driver");
+		customerConnection.setUrl("jdbc:mysql://localhost/VaadinDB");
+		customerConnection.setUsername("root");
+		customerConnection.setPassword("");
+	    JdbcTemplate CustomerNpjt = new JdbcTemplate(customerConnection);
+	    customerDAOImpl = new CustomerDAOImpl(CustomerNpjt);
+	    
+	    companyConnection.setDriverClassName("com.mysql.jdbc.Driver");
+	    companyConnection.setUrl("jdbc:mysql://localhost/VaadinDB");
+	    companyConnection.setUsername("root");
+	    companyConnection.setPassword("");
+	    JdbcTemplate companyNpjt = new JdbcTemplate(customerConnection);
+	    companyDAOImpl = new CompanyDAOImpl(companyNpjt);
+	    
+		
 		save.setStyleName(ValoTheme.BUTTON_PRIMARY);
 		save.setClickShortcut(KeyCode.ENTER);
 		cancel.setStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -71,7 +95,6 @@ public class MyUI extends UI {
 		filterText.setValueChangeMode(ValueChangeMode.LAZY);
 
 		Button clearFilterTextBtn = new Button(FontAwesome.TIMES);
-		clearFilterTextBtn.setDescription("Clear the current filter");
 		clearFilterTextBtn.addClickListener(e -> filterText.clear());
 
 		CssLayout search = new CssLayout();
@@ -93,7 +116,7 @@ public class MyUI extends UI {
 		updateLayout.addComponents(firstNameField2, positionField2, emailField2);
 		
 		grid.setColumns("customerId", "firstName", "position", "email");
-		
+
 
 		HorizontalLayout main = new HorizontalLayout(grid);
 		
@@ -106,6 +129,7 @@ public class MyUI extends UI {
 		addCustomerBtn.addClickListener(e -> {
 		grid.asSingleSelect().clear();
 		updateList();
+	
 		addWindow(addWindow);
 		addWindow.setModal(true);
 		});	
@@ -113,14 +137,18 @@ public class MyUI extends UI {
 		updateCustomerBtn.addClickListener(e -> {
 			grid.asSingleSelect().clear();
 			updateList();
+	
 			addWindow(updateWindow);
 			updateWindow.setModal(true);
 			});	
 		
 		
 		
+		layout.addComponent(tabsheet);
+		
 		layout.addComponents(toolbar, main);
 		updateList();
+	
 		setContent(layout);
 
 	
@@ -135,36 +163,29 @@ public class MyUI extends UI {
 
 
 	private void save() {
-		databaseInstance.addToDatabase(firstNameField.getValue(), positionField.getValue(), emailField.getValue());
+		customerDAOImpl.insert(new Customer(firstNameField.getValue(), positionField.getValue(), emailField.getValue()));
 		updateList();
+	
 		addWindow.close();
 	}
 	
 	private void update() {
 		Set<Customer> set = grid.getSelectedItems();
+		
 		for (Customer c : set){
-			databaseInstance.updateDatabase(c.getId(), c.getFirstName(), c.getPosition(), c.getEmail());
+			customerDAOImpl.changeCustomer(c.getId(), c.getFirstName(), c.getPosition(), c.getEmail());
 		}
+		
 	}
 	
 	
 	public void updateList() {
-		 List<Customer> customers = new ArrayList();
-		 ResultSet rs = databaseInstance.getResultSetCustomers();
-		 try{
-			 while(rs.next()){
-				 Customer customer = new Customer();
-				 customer.setFirstName(rs.getString("First_Name"));
-				 customer.setPosition(rs.getString("Position"));
-				 customer.setEmail(rs.getString("Email"));
-				 customer.setId(rs.getLong("id"));
-				 customers.add(customer);		
-	      }
-		 } catch (SQLException e){
-			 e.printStackTrace();
-		 }	 
+		 List<Customer> customers = customerDAOImpl.updateCustomerList();
 			grid.setItems(customers);
 	}
+	
+	
+
 	
 	private void cancel() {
 		addWindow.close();
@@ -173,11 +194,10 @@ public class MyUI extends UI {
 	private void delete() {
 		Set<Customer> set = grid.getSelectedItems();
 		for (Customer c : set){
-			databaseInstance.removeFromDatabase(c.getId());
+			customerDAOImpl.delete(c.getId());
 		}
-		updateList();
+		updateList();	
 	}
-	
 
 	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
 	@VaadinServletConfiguration(ui = MyUI.class, productionMode = false)

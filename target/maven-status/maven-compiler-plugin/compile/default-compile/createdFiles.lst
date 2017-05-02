@@ -1,3 +1,10 @@
+my/vaadin/app/CompanyGrid.class
+my/vaadin/dao/interfaces/CustomerDAO.class
+my/vaadin/app/DatabaseConnectuion.class
+my/vaadin/app/Company.class
 my/vaadin/app/MyUI.class
 my/vaadin/app/MyUI$MyUIServlet.class
-my/vaadin/app/Customer.class
+my/vaadin/dao/objects/Customer.class
+my/vaadin/dao/impls/CustomerDAOImpl.class
+my/vaadin/dao/impls/CustomerDAOImpl$1.class
+my/vaadin/dao/impls/CustomerDAOImpl$CustomerRowMapper.class

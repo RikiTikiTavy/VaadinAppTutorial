@@ -6,6 +6,19 @@ import java.util.Date;
 
 @SuppressWarnings("serial")
 public class Customer implements Serializable, Cloneable {
+	
+	
+	
+
+	public Customer() {
+		
+	}
+
+	public Customer(String firstName, String position, String email) {
+		this.firstName = firstName;
+		this.position = position;
+		this.email = email;
+	}
 
 	private Long id;
 

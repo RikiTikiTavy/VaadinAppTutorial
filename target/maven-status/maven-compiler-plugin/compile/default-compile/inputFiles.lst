@@ -1,5 +1,7 @@
+/home/roman/workspace/app/src/main/java/my/vaadin/dao/impls/CustomerDAOImpl.java
 /home/roman/workspace/app/src/main/java/my/vaadin/app/Company.java
 /home/roman/workspace/app/src/main/java/my/vaadin/app/MyUI.java
-/home/roman/workspace/app/src/main/java/my/vaadin/app/Customer.java
+/home/roman/workspace/app/src/main/java/my/vaadin/dao/interfaces/CustomerDAO.java
 /home/roman/workspace/app/src/main/java/my/vaadin/app/CompanyGrid.java
 /home/roman/workspace/app/src/main/java/my/vaadin/app/DatabaseConnectuion.java
+/home/roman/workspace/app/src/main/java/my/vaadin/dao/objects/Customer.java
